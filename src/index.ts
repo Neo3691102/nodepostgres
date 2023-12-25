@@ -1,7 +1,7 @@
 import http from "node:http";
 //import fs from "node:fs";
 import {Pool} from  'pg';
-import { parse } from 'querystring';
+
 
 const pool = new Pool({
     user: 'postgres',
@@ -38,11 +38,13 @@ const server = http.createServer(async (req ,res) => {
           body += chunk.toString();
         });
         req.on('end', async () => {
-          const data = parse(body);
+          const data = JSON.parse(body);
+      
           try {
-            const result = await pool.query('INSERT INTO articles (name, brand, stock) VALUES ($1, $2, $3)', [data['name'], data['brand'], data['stock']]);
+           await pool.query('INSERT INTO articles (name, brand, stock) VALUES ($1, $2, $3)', [data['name'], data['brand'], data['stock']]);
+            
             res.writeHead(201);
-            res.end("SE INSERTÓ CORRECTAMENTE: " + result);
+            res.end("SE INSERTÓ CORRECTAMENTE");
           } catch (err) {
             console.error(err);
             res.writeHead(500);
