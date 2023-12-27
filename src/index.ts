@@ -52,9 +52,33 @@ const server = http.createServer(async (req ,res) => {
           }
         });
       }
+
+      if (req.method === "PUT" && req.url && req.url === "/articles"){
+        let body = '';
+        req.on('data', chunk => {
+          body += chunk.toString();
+        });
+        req.on('end', async () => {
+          const data = JSON.parse(body);
+          const id = data.id;
+      
+          
+          try {
+            await pool.query('UPDATE articles SET name = $1, brand = $2, stock = $3 WHERE id = $4', [data['name'], data['brand'], data['stock'], id]);
+            
+            res.writeHead(200);
+            res.end("SE ACTUALIZÓ CORRECTAMENTE");
+          } catch (err) {
+            console.error(err);
+            res.writeHead(500);
+            res.end("Internal Server Error");
+          }
+        });
+      }
+
     });
 
-
+      
 
 server.listen(5500, () =>
   console.log("Servidor ejecutándose en http://localhost:5500/")
