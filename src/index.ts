@@ -76,6 +76,31 @@ const server = http.createServer(async (req ,res) => {
         });
       }
 
+      if(req.method === "DELETE" && req.url && req.url === "/articles"){
+        let body = '';
+        req.on('data', chunk => {
+          body += chunk.toString();
+        });
+
+        req.on( 'end', async () => {
+          const data = JSON.parse(body);
+          const id = data.id;
+          try {
+            await pool.query('DELETE FROM articles WHERE id = $1', [id]);
+            
+            res.writeHead(200);
+            res.end("SE ELIMINÓ CORRECTAMENTE");
+          } catch (err) {
+            console.error(err);
+            res.writeHead(500);
+            res.end("Internal Server Error");
+          }
+        });
+          
+          
+        }
+      
+
     });
 
       
