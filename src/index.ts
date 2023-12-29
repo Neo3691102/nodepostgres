@@ -41,7 +41,7 @@ const server = http.createServer(async (req ,res) => {
           const data = JSON.parse(body);
       
           try {
-           await pool.query('INSERT INTO articles (name, brand, stock) VALUES ($1, $2, $3)', [data['name'], data['brand'], data['stock']]);
+           await pool.query('INSERT INTO articles (name, brand, stock, active) VALUES ($1, $2, $3, $4)', [data['name'], data['brand'], data['stock'], data['active']]);
             
             res.writeHead(201);
             res.end("SE INSERTÓ CORRECTAMENTE");
@@ -64,7 +64,7 @@ const server = http.createServer(async (req ,res) => {
       
           
           try {
-            await pool.query('UPDATE articles SET name = $1, brand = $2, stock = $3 WHERE id = $4', [data['name'], data['brand'], data['stock'], id]);
+            await pool.query('UPDATE articles SET name = $1, brand = $2, stock = $3, active = $4 WHERE id = $5', [data['name'], data['brand'], data['stock'], data['active'], id]);
             
             res.writeHead(200);
             res.end("SE ACTUALIZÓ CORRECTAMENTE");
@@ -77,6 +77,7 @@ const server = http.createServer(async (req ,res) => {
       }
 
       if(req.method === "DELETE" && req.url && req.url === "/articles"){
+
         let body = '';
         req.on('data', chunk => {
           body += chunk.toString();
@@ -86,7 +87,7 @@ const server = http.createServer(async (req ,res) => {
           const data = JSON.parse(body);
           const id = data.id;
           try {
-            await pool.query('DELETE FROM articles WHERE id = $1', [id]);
+            await pool.query('UPDATE articles SET active = false WHERE id = $1', [id]);
             
             res.writeHead(200);
             res.end("SE ELIMINÓ CORRECTAMENTE");
